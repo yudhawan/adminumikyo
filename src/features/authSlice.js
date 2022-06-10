@@ -1,28 +1,46 @@
 import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
-
+import axios from 'axios'
+import host from './host'
 export const authServices = createAsyncThunk("auth/authServices", async () => {
-    const currentToken = localStorage.getItem('__ut_um_t')
-    const response = await fetch("https://beautyshop.yashacode.com/admin/authservices",{
-        method: "GET",
-        headers: {
-            'authorization': `Bearer ${currentToken}`,
-        },
-    });
-    const result = await response.json();
-    return result;
+    try {
+        const currentToken = localStorage.getItem('__ut_um_t')
+        if(currentToken){
+            let result = await axios({
+                method: "GET",
+                url:host+"/admin/authservices",
+                headers: {
+                    'authorization': `Bearer ${currentToken}`,
+                },
+            });
+            if(currentToken===result.data.accessToken){
+                
+                localStorage.setItem('__ut_um_t',result.data.accessToken)
+                localStorage.setItem('__lg_um', true)
+                return result.data.accessToken;
+            }
+            if(currentToken!=result.data.accessToken){
+
+                localStorage.removeItem('__ut_um_t')
+                localStorage.removeItem('__lg_um')
+                return {accesstoken:null}
+            }
+        }
+    } catch (error) {
+ 
+        localStorage.removeItem('__ut_um_t')
+        localStorage.removeItem('__lg_um')
+        return {accesstoken:null}
+    }
+        
 });
 
 export const authLogin = createAsyncThunk("auth/authLogin", async (data) => {
-    const response = await fetch("https://beautyshop.yashacode.com/admin/authlogin", {
-        method: "POST",
-        body: JSON.stringify(data)
-    });
-    const result = await response.json();
+    const result = await axios.post(host+"/admin/login",data);
     if(result.status === 200){
-        localStorage.setItem('__ut_um_t',result.accessToken)
+        localStorage.setItem('__ut_um_t',result.data.accessToken)
         localStorage.setItem('__lg_um', true)
     }
-    return result;
+    return result.data.accessToken;
 });
 
 
@@ -34,13 +52,21 @@ const authSlice = createSlice({
         isLoading: false,
         error: null,
     },
+    reducers:{
+        logout: (state) => {
+            localStorage.removeItem('__ut_um_t')
+            localStorage.removeItem('__lg_um')
+            state.token = null
+            window.location.replace('/')
+        }
+    },
     extraReducers: {
         [authServices.pending]: (state, action) => {
             state.isLoading = true;
         },
         [authServices.fulfilled]: (state, action) => {
             state.isLoading = false;
-            state.token = action.payload.accessToken;
+            state.token = action.payload;
         },
         [authServices.rejected]: (state, action) => {
             state.isLoading = false;
@@ -51,7 +77,7 @@ const authSlice = createSlice({
         },
         [authLogin.fulfilled]: (state, action) => {
             state.isLoading = false;
-            state.token = action.payload.accessToken;
+            state.token = action.payload;
         },
         [authLogin.rejected]: (state, action) => {
             state.isLoading = false;
@@ -59,5 +85,5 @@ const authSlice = createSlice({
         },
     }
 });
-
+export const {logout}= authSlice.actions
 export default authSlice.reducer;

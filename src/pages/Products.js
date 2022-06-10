@@ -8,7 +8,6 @@ function Products() {
   const {products,productsLoading} = useSelector(state=>state.products)
   const [edit,setedit] = useState('')
   const [addProduct,setaddProduct] = useState(false)
-  const handleDelete = (id)=> console.log(id)
   const handleAddBack = ()=>setaddProduct(!addProduct)
   const handleEditBack = ()=> setedit('')
   useEffect(()=>{
@@ -23,7 +22,7 @@ function Products() {
       
       {productsLoading&&<div>Loading</div>}
       {
-        edit?<EditProducts id={edit} handleEditBack={handleEditBack} handleDelete={handleDelete}/>:addProduct?<AddProduct handleAddBack={handleAddBack}  />:
+        edit?<EditProducts id={edit} handleEditBack={handleEditBack}/>:addProduct?<AddProduct handleAddBack={handleAddBack}  />:
         <div className='flex flex-wrap w-full h-auto justify-center'>
           {products&&products.map(product=>(
           <div key={product.id} className='rounded-lg shadow-md bg-gray-200 hover:bg-gray-400 w-60 h-24 flex flex-col p-1 lg:p-2 mx-1 my-1 cursor-pointer' onClick={()=>setedit(product.id)} >

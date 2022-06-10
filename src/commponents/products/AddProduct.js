@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import {addProducts} from '../../features/products/productsSlice'
 import {getCategories} from '../../features/products/categoriesSlice'
 import {useDispatch, useSelector} from 'react-redux'
 function AddProduct({handleAddBack}) {
@@ -24,13 +25,16 @@ function AddProduct({handleAddBack}) {
             <div className='flex mt-2 font-semibold font-sans text-2xl text-gray-500'>Add Product</div>
             <div className='flex justify-between w-full px-2 lg:px-20'>
                 <div onClick={handleAddBack} className='cursor-pointer rounded-md bg-gray-500 px-1 lg:font-semibold lg:text-lg lg:px-2 text-white hover:bg-gray-700'>Back</div>
-                <div onClick={handleAddBack} className='cursor-pointer rounded-md bg-green-500 px-1 lg:font-semibold lg:text-lg lg:px-2 text-white hover:bg-green-700'>Add</div>
+                <div onClick={()=> {
+                    dispatch(addProducts({images:images, product:product}))
+                    handleAddBack()
+                    }} className='cursor-pointer rounded-md bg-green-500 px-1 lg:font-semibold lg:text-lg lg:px-2 text-white hover:bg-green-700'>Add</div>
             </div>
             <div className='flex flex-col px-2 lg:flex-row justify-start lg:space-x-16 mt-5 w-full lg:px-10'>
             <div className='lg:flex-col lg:flex lg:space-y-2 space-y-1 lg:w-1/2 w-3/4 '>
-                <div className='rounded-md px-2 py-1 border border-gray-400'><input className='outline-none' placeholder='Nama Product' type="text" value={product.product_name} onChange={(e)=> setproduct({...product, product_name:e.target.value})} /></div>
-                <div className='rounded-md px-2 py-1 border border-gray-400'><input className='outline-none' placeholder='Stock' type="number" value={product.stock} onChange={(e)=> setproduct({...product, stock:e.target.value})} /></div>
-                <div className='rounded-md px-2 py-1 border border-gray-400'><input className='outline-none' placeholder='Harga' type="number" value={product.price} onChange={(e)=> setproduct({...product, price:e.target.value})} /></div>
+                <div className='rounded-md px-2 py-1 border border-gray-400'><input className='outline-none w-full' placeholder='Nama Product' type="text" value={product.product_name} onChange={(e)=> setproduct({...product, product_name:e.target.value})} /></div>
+                <div className='rounded-md px-2 py-1 border border-gray-400'><input className='outline-none w-full' placeholder='Stock' type="number" value={product.stock} onChange={(e)=> setproduct({...product, stock:e.target.value})} /></div>
+                <div className='rounded-md px-2 py-1 border border-gray-400'><input className='outline-none w-full' placeholder='Harga' type="number" value={product.price} onChange={(e)=> setproduct({...product, price:e.target.value})} /></div>
                 <div className='flex-col'>
                 <div>Category</div>
                 <div className='rounded-md px-2 py-1 border border-gray-400'>
@@ -59,15 +63,15 @@ function AddProduct({handleAddBack}) {
                 
             </div>
             <div className='lg:flex-col lg:flex lg:space-y-2 space-y-1 lg:w-1/2 w-3/4 '>
-                <div className='rounded-md px-2 py-1 border border-gray-400'><input className='outline-none' placeholder='Minimal Grosir' type="number" value={product.grosir_min} onChange={(e)=> setproduct({...product, grosir_min:e.target.value})} /></div>
-                <div className='rounded-md px-2 py-1 border border-gray-400'><input className='outline-none' placeholder='Harga Grosir' type="number" value={product.grosir_price} onChange={(e)=> setproduct({...product, grosir_price:e.target.value})} /></div>
+                <div className='rounded-md px-2 py-1 border border-gray-400'><input className='outline-none w-full' placeholder='Minimal Grosir' type="number" value={product.grosir_min} onChange={(e)=> setproduct({...product, grosir_min:e.target.value})} /></div>
+                <div className='rounded-md px-2 py-1 border border-gray-400'><input className='outline-none w-full' placeholder='Harga Grosir' type="number" value={product.grosir_price} onChange={(e)=> setproduct({...product, grosir_price:e.target.value})} /></div>
                 <div className='flex-col'>
                 <div>Images</div>
                 <div className={`rounded-md px-1 py-1 flex-col overflow-y-auto ${(picture.length>0)?'border border-gray-400 w-52 h-44':''}`}>
                     
                     {
                         
-                        picture?.map(val => <div className='w-40 h-40 mx-1 my-1'><img src={val} className="w-full h-full" /></div>)
+                        picture?.map((val,index) => <div key={index} className='w-40 h-40 mx-1 my-1'><img src={val} className="w-full h-full" /></div>)
                 
                     }
                     

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import {useDispatch, useSelector} from 'react-redux'
-import {getProducts} from '../../features/products/productsSlice'
+import {getProducts,updateProduct,deleteProducts} from '../../features/products/productsSlice'
 import {getCategories} from '../../features/products/categoriesSlice'
 
-function EditProducts({id,handleEditBack,handleDelete}) {
+function EditProducts({id,handleEditBack}) {
   const dispatch = useDispatch()
   const {products,productsLoading} = useSelector(state=>state.products)
   const { categories,categoriesLoading } = useSelector(state=>state.categories)
@@ -25,27 +25,43 @@ function EditProducts({id,handleEditBack,handleDelete}) {
     dispatch(getProducts())
     dispatch(getCategories())
   },[id])
-  
   return (
     <div className='flex flex-col items-center w-full '>
         <div className='flex justify-between w-full px-2 lg:px-20'>
             <div onClick={handleEditBack} className='select-none cursor-pointer rounded-md bg-gray-500 px-1 lg:font-semibold lg:text-lg lg:px-2 text-white hover:bg-gray-700'>Back</div>
-            <div onClick={()=>handleDelete(product.id)} className='select-none cursor-pointer rounded-md bg-rose-500 px-1 lg:font-semibold lg:text-lg lg:px-2 text-white hover:bg-rose-700'>Delete</div>
-            <div onClick={handleEditBack} className='select-none cursor-pointer rounded-md bg-green-500 px-1 lg:font-semibold lg:text-lg lg:px-2 text-white hover:bg-green-700'>Save</div>
+            <div onClick={()=>{
+              dispatch(deleteProducts(product.id))
+              handleEditBack()
+            }} className='select-none cursor-pointer rounded-md bg-rose-500 px-1 lg:font-semibold lg:text-lg lg:px-2 text-white hover:bg-rose-700'>Delete</div>
+            <div onClick={()=> {
+              dispatch(updateProduct({images:images, product:product}))
+              setproduct({
+                id: 0,
+                product_name: null,
+                category: null,
+                stock: 0,
+                sub: null,
+                price: 0,
+                description: null,
+                grosir_min: (data?.grosir_min)?data?.grosir_min:0,
+                grosir_price: (data?.grosir_price)?data?.grosir_price:0,
+              })
+              handleEditBack()
+              }} className='select-none cursor-pointer rounded-md bg-green-500 px-1 lg:font-semibold lg:text-lg lg:px-2 text-white hover:bg-green-700'>Save</div>
         </div>
         <div className='flex flex-col px-2 lg:flex-row justify-start lg:space-x-16 mt-5 w-full lg:px-10'>
           <div className='lg:flex-col lg:flex lg:space-y-2 space-y-1 w-1/2 '>
             <div className='flex-col'>
               <div>Nama Product</div>
-              <div className='rounded-md px-2 py-1 border border-gray-400'><input className='outline-none' type="text" value={product.product_name} onChange={(e)=> setproduct({...product, product_name:e.target.value})} /></div>
+              <div className='rounded-md px-2 py-1 border border-gray-400'><input className='outline-none w-full' type="text" value={product.product_name} onChange={(e)=> setproduct({...product, product_name:e.target.value})} /></div>
             </div>
             <div className='flex-col'>
               <div>Stock</div>
-              <div className='rounded-md px-2 py-1 border border-gray-400'><input className='outline-none' type="number" value={product.stock} onChange={(e)=> setproduct({...product, stock:e.target.value})} /></div>
+              <div className='rounded-md px-2 py-1 border border-gray-400'><input className='outline-none w-full' type="number" value={product.stock} onChange={(e)=> setproduct({...product, stock:e.target.value})} /></div>
             </div>
             <div className='flex-col'>
               <div>Price</div>
-              <div className='rounded-md px-2 py-1 border border-gray-400'><input className='outline-none' type="number" value={product.price} onChange={(e)=> setproduct({...product, price:e.target.value})} /></div>
+              <div className='rounded-md px-2 py-1 border border-gray-400'><input className='outline-none w-full' type="number" value={product.price} onChange={(e)=> setproduct({...product, price:e.target.value})} /></div>
             </div>
             <div className='flex-col'>
               <div>Category</div>
@@ -53,13 +69,13 @@ function EditProducts({id,handleEditBack,handleDelete}) {
                 <select className='w-full' onChange={(e)=>setproduct({...product, category:e.target.value})}>
                   {
                     categories&&categories.map(category=>{
-                      if(product.category){
-                        return(
-                          <option key={category.id} value={product.category} selected={category.category===product.category}>{category.category}</option>
-                        )
-                      }
+                      // if(product.category){
+                      //   return(
+                      //     <option key={category.id} value={product.category} selected={category.category===product.category}>{category.category}</option>
+                      //   )
+                      // }
                       return(
-                        <option key={category.id} value={category.category}>{category.category}</option>
+                        <option key={category.id} value={category.category} selected={category.category===product.category}>{category.category}</option>
                       )
                     })
                   }
@@ -70,15 +86,16 @@ function EditProducts({id,handleEditBack,handleDelete}) {
               <div>Sub Category</div>
               <div className='rounded-md px-2 py-1 border border-gray-400'>
                 <select className='w-full' onChange={(e)=>setproduct({...product, sub:e.target.value})}>
+                  <option>---/---</option>
                   {
                     categories&&categories.filter(val => val.category===product.category)[0]?.['sub_categories']?.map((sub,index)=>{
-                      if(product.sub){
-                        return(
-                          <option value={product.sub} selected={sub.sub===product.sub}>{sub.sub}</option>
-                        )
-                      }
+                      // if(product.sub){
+                      //   return(
+                      //     <option key={index} value={product.sub} selected={sub.sub===product.sub}>{sub.sub}</option>
+                      //   )
+                      // }
                       return(
-                        <option key={index} value={sub.sub}>{sub.sub}</option>
+                        <option key={index} value={sub.sub} selected={sub.sub===product.sub}>{sub.sub}</option>
                       )
                     })
                   }
@@ -93,11 +110,11 @@ function EditProducts({id,handleEditBack,handleDelete}) {
           <div className='lg:flex-col lg:flex lg:space-y-2 space-y-1 w-1/2 '>
             <div className='flex-col'>
               <div>Minimal Grosir</div>
-              <div className='rounded-md px-2 py-1 border border-gray-400'><input className='outline-none' type="number" value={product.grosir_min} onChange={(e)=> setproduct({...product, grosir_min:e.target.value})} /></div>
+              <div className='rounded-md px-2 py-1 border border-gray-400'><input className='outline-none w-full' type="number" value={product.grosir_min} onChange={(e)=> setproduct({...product, grosir_min:e.target.value})} /></div>
             </div>
             <div className='flex-col'>
               <div>Harga Grosir</div>
-              <div className='rounded-md px-2 py-1 border border-gray-400'><input className='outline-none' type="number" value={product.grosir_price} onChange={(e)=> setproduct({...product, grosir_price:e.target.value})} /></div>
+              <div className='rounded-md px-2 py-1 border border-gray-400'><input className='outline-none w-full' type="number" value={product.grosir_price} onChange={(e)=> setproduct({...product, grosir_price:e.target.value})} /></div>
             </div>
             <div className='flex-col'>
               <div>Images</div>
@@ -105,9 +122,9 @@ function EditProducts({id,handleEditBack,handleDelete}) {
                 
                   {
                     (picture.length>0)?<>
-                    {picture.map(val => <div className='w-40 h-40 mx-1 my-1'><img src={val} className="w-full h-full" /></div>)}
+                    {picture.map((val,index) => <div key={index} className='w-40 h-40 mx-1 my-1'><img src={val} className="w-full h-full" /></div>)}
                     </>:<div className='flex'>{
-                      images.split(',').map(val => <div className='w-40 h-40 mx-1 my-1'><img src={`https://beautyshop.yashacode.com/products/img/${val}`} className="w-full h-full" /></div>)
+                      images.split(',').map((val,index) => <div key={index} className='w-40 h-40 mx-1 my-1'><img src={`https://beautyshop.yashacode.com/products/img/${val}`} className="w-full h-full" /></div>)
                       }</div>
                   }
                 

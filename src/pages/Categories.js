@@ -8,17 +8,19 @@ function Categories() {
 
   const [category,setcategory] = useState('')
   const [editcategory,seteditcategory] = useState({
-    id:'',
+    id:null,
     cat:''
   })
-  const [sub,setsub] = useState('')
   const [editsub,seteditsub] = useState({
     id:'',
     sub:''
   })
-
-  const [selected,setselected] = useState('')
-  const handleSelected = (val)=> setselected(val)
+  const [selected,setselected] = useState({
+    id:null,
+    selected:''
+  })
+  const [sub,setsub] = useState('')
+  const handleSelected = (id,val)=> setselected({id:id,selected:val})
   function handleSubmitCategory(e){
     e.preventDefault()
     dispatch(addCategories(category))
@@ -26,13 +28,18 @@ function Categories() {
   }
   function handleSubmitSubCategory(e){
     e.preventDefault()
-    dispatch(addSubCategories(sub))
+    dispatch(addSubCategories({id:selected.id,sub:sub}))
     setsub('')
   }
+  const handleEditCategory=()=> {
+    dispatch(editCategories(editcategory))
+    seteditcategory({
+      id:null,
+      cat:''
+    })
+  }
 
-  const handleEditCategory=()=> dispatch(editCategories(editcategory))
-
-  const handleEditSub=(id)=> dispatch(editCategories({id:id,sub_category:editSubCategories}))
+  // const handleEditSub=(id)=> dispatch(editCategories({id:id,sub_category:editSubCategories}))
 
   const editCategory = (id,e)=> seteditcategory({id:id,cat:e})
   const editSubCategory = (id,e)=> seteditsub({id:id,sub:e})
@@ -65,24 +72,24 @@ function Categories() {
             <div className='rounded-md border border-gray-400 px-2 py-1'><input className='outline-none w-full' value={category} onChange={(e)=> setcategory(e.target.value)} type="text" placeholder='Add Category' /></div>
           </form>
           <div className='w-full flex flex-wrap'>
-            <Category categories={categories} handleSelected={handleSelected} selected={selected} deleteCategory={deleteCategory} editCategory={editCategory}/>
+            <Category categories={categories} handleSelected={handleSelected} selected={selected.selected} deleteCategory={deleteCategory} editCategory={editCategory}/>
           </div>
         </div>
         <div className='w-[50vw] lg:w-[25vw] border border-purple-300 p-4 flex flex-col space-y-1 relative'>
           {/* edit sub */}
-          {editsub.sub&&<div className='absolute w-full h-full bg-transparent backdrop-blur-sm left-0 top-0 flex flex-col space-y-1 justify-center items-center'>
+          {/* {editsub.sub&&<div className='absolute w-full h-full bg-transparent backdrop-blur-sm left-0 top-0 flex flex-col space-y-1 justify-center items-center'>
             <div className='rounded-md border border-gray-400 px-2 py-1 w-40 bg-white'><input className='outline-none w-full' value={editsub.sub} onChange={(e)=> seteditsub({...editsub, sub:e.target.value})} type="text" /></div>
             <div className='flex space-x-1'>
               <button className='bg-rose-600 rounded-md px-1 text-white' onClick={()=>seteditsub({id:'', sub:''})}>Cancel</button>
               <button className='bg-green-600 rounded-md px-1 text-white' onClick={handleEditSub}>Save</button>
             </div>
-          </div>}
+          </div>} */}
           {/* add sub */}
-          {selected?<form onSubmit={handleSubmitSubCategory}>
+          {selected.selected?<form onSubmit={handleSubmitSubCategory}>
             <div className='rounded-md border border-gray-400 px-2 py-1'><input className='outline-none w-full' value={sub} onChange={(e)=> setsub(e.target.value)} type="text" placeholder='Add Sub Category' /></div>
           </form>:<></>}
           <div className='w-full flex flex-wrap'>
-            <Sub categories={categories} selected={selected} deleteSubCategory={deleteSubCategory} editSubCategory={editSubCategory} />
+            <Sub categories={categories} selected={selected.selected} deleteSubCategory={deleteSubCategory} editSubCategory={editSubCategory} />
           </div>
         </div>
       </div>

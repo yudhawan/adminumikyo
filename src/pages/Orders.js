@@ -2,7 +2,7 @@ import React from 'react'
 
 function Orders() {
   return (
-    <div>Orders</div>
+    <div>Halaman ini sedang dalam proses perbaikan, mohon bersabar</div>
   )
 }
 

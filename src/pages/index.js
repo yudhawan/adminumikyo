@@ -5,16 +5,17 @@ import Home from './Home'
 import Products from './Products'
 import Categories from './Categories'
 import Sellers from './Sellers'
-import PrivateRoute from '../hooks/PrivateRoute'
+import {PrivateRoute,PrivateRouteTab} from '../hooks/PrivateRoute'
 import TabMenu from '../commponents/TabMenu'
 import Orders from './Orders'
+import Setting from './Setting'
 function Main() {
   return (
     <Router>
         <Header/>
-        <PrivateRoute>
+        <PrivateRouteTab>
             <TabMenu/>
-        </PrivateRoute>
+        </PrivateRouteTab>
         <div className='mt-16 lg:mt-32 lg:px-5'>
         <Routes>
             <Route path='/' element={
@@ -22,6 +23,7 @@ function Main() {
                     <Home />
                 </PrivateRoute>
             } />
+            
             <Route path='/products' element={
                 <PrivateRoute>
                     <Products />
@@ -40,6 +42,11 @@ function Main() {
             <Route path='/sellers' element={
                 <PrivateRoute>
                     <Sellers/>
+                </PrivateRoute>
+            } />
+            <Route path='/setting' element={
+                <PrivateRoute>
+                    <Setting/>
                 </PrivateRoute>
             } />
         </Routes>

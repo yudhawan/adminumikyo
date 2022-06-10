@@ -1,7 +1,7 @@
 import React from 'react'
 import {useDispatch} from 'react-redux'
 import {acceptSeller,deleteSellers} from '../../features/sellers/sellersSlice'
-function NewSellers({sellers,sellersLoading}) {
+function NewSellers({sellers,sellersLoading,query}) {
     const dispatch = useDispatch()
   return (
     <div className={`'flex'`}>
@@ -19,7 +19,7 @@ function NewSellers({sellers,sellersLoading}) {
             <tbody className='overflow-x-auto lg:overflow-x-auto lg:overflow-y-scroll w-full h-[65vh] flex flex-col'>
                 {
                     sellersLoading?<tr><td colSpan='5' className='text-center'>Loading...</td></tr>:
-                    sellers.filter(val => val.verification==0).filter(val => (val.status.includes('DVIP'))|(val.status.includes('DS'))).map((seller,index)=>{
+                    sellers.filter(val => val.nama_lengkap.toLowerCase().includes(query.toLowerCase())).filter(val => val.verification==0).filter(val => (val.status.includes('DVIP'))|(val.status.includes('DS'))).map((seller,index)=>{
                         return seller.length===0?<tr><td colSpan='6' className='text-center'>Tidak ada data</td></tr>:
                          <tr key={index} className="flex text-left w-full">
                             <td className='h-auto w-[15vw] lg:w-[10%] '>{index+1}</td>

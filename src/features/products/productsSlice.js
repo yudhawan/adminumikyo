@@ -1,40 +1,59 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-
+import axios from "axios";
+// https://beautyshop.yashacode.com
 export const getProducts = createAsyncThunk("products/getProducts", async()=>{
     const response = await fetch("https://beautyshop.yashacode.com/products")
     const result = await response.json()
     return result
 })
 
-export const addProducts = createAsyncThunk("products/addProducts", async(data,{getState})=>{
+export const addProducts = createAsyncThunk("products/addProducts", async(data,{getState,dispatch})=>{
     const token = getState().auth.token
     let formdata = new FormData()
     for (let i = 0; i < data.images.length; i++) {
         formdata.append('images', data.images[i])
     }
     formdata.append('product', JSON.stringify(data.product))
-    const response = await fetch("https://beautyshop.yashacode.com/products",{
+    await axios({
         method:"POST",
+        url:"https://beautyshop.yashacode.com/products",
         headers:{
             "authorization": `Bearer ${token}`,
         },
-        body:JSON.stringify(formdata)
+        data:formdata
     })
-    const result = await response.json()
-    return result
+    dispatch(getProducts())
 })
 
-export const deleteProducts = createAsyncThunk("products/deleteProducts", async(data,{getState})=>{
+export const deleteProducts = createAsyncThunk("products/deleteProducts", async(data,{getState,dispatch})=>{
     const token = getState().auth.token
-    const response = await fetch("https://beautyshop.yashacode.com/products",{
+    await axios({
         method:"DELETE",
+        url:"https://beautyshop.yashacode.com/products",
         headers:{
             "authorization": `Bearer ${token}`,
         },
-        body:JSON.stringify({products:data}) //data as array
+        data:{id:data} 
     })
-    const result = await response.json()
-    return result
+    dispatch(getProducts())
+})
+
+export const updateProduct = createAsyncThunk("products/updateProduct", async(data,{getState,dispatch})=>{
+    const token = getState().auth.token
+    let formdata = new FormData()
+    for (let i = 0; i < data.images.length; i++) {
+        formdata.append('images', data.images[i])
+    }
+    formdata.append('product', JSON.stringify(data.product))
+    await axios({
+        method:"PUT",
+        url:"https://beautyshop.yashacode.com/products",
+        headers:{
+            "authorization": `Bearer ${token}`,
+        },
+        data:formdata
+    })
+    dispatch(getProducts())
 })
 
 const productsSlice = createSlice({

@@ -1,5 +1,6 @@
 import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
-
+import axios from 'axios';
+// https://beautyshop.yashacode.com
 export const getCategories = createAsyncThunk("categories/getCategories", async()=>{
     const response = await fetch("https://beautyshop.yashacode.com/category")
     const result = await response.json()
@@ -8,79 +9,80 @@ export const getCategories = createAsyncThunk("categories/getCategories", async(
 
 export const addCategories = createAsyncThunk("categories/addCategories", async(data,{getState})=>{
     const token = getState().auth.token
-    const response = await fetch("https://beautyshop.yashacode.com/category",{
+    const result = await axios({
         method:"POST",
+        url:"https://beautyshop.yashacode.com/category",
+        data:{category:data},
         headers:{
             "authorization": `Bearer ${token}`,
         },
-        body:JSON.stringify({category:data})
     })
-    const result = await response.json()
-    return result
+    return result.data
 })
 
 export const addSubCategories = createAsyncThunk("categories/addSubCategories", async(data,{getState})=>{
     const token = getState().auth.token
-    const response = await fetch("https://beautyshop.yashacode.com/category/sub",{
+    const result = await axios({
         method:"POST",
+        url:"https://beautyshop.yashacode.com/category/sub",
         headers:{
             "authorization": `Bearer ${token}`,
         },
-        body:JSON.stringify({category:data})
+        data:data
     })
-    const result = await response.json()
-    return result
+    return result.data
 })
 
-export const editCategories = createAsyncThunk("categories/deleteCategories", async(data,{getState})=>{
+export const editCategories = createAsyncThunk("categories/editCategories", async(data,{getState,dispatch})=>{
     const token = getState().auth.token
-    const response = await fetch(`https://beautyshop.yashacode.com/category`,{
+    await axios({
         method:"PUT",
+        url:`https://beautyshop.yashacode.com/category`,
+        data:data,
         headers:{
             "authorization": `Bearer ${token}`,
         },
-        body:JSON.stringify({cat:data})
     })
-    const result = await response.json()
-    return result
+    dispatch(getCategories())
 })
 
-export const editSubCategories = createAsyncThunk("categories/deleteSubCategories", async(data,{getState})=>{
+export const editSubCategories = createAsyncThunk("categories/editSubCategories", async(data,{getState,dispatch})=>{
     const token = getState().auth.token
-    const response = await fetch("https://beautyshop.yashacode.com/category/sub",{
+    const response = await fetch({
         method:"PUT",
+        url:"https://beautyshop.yashacode.com/category",
         headers:{
             "authorization": `Bearer ${token}`,
         },
-        body:JSON.stringify({sub:data})
+        data:{sub:data}
     })
-    const result = await response.json()
-    return result
+    dispatch(getCategories())
 })
 
-export const deleteCategories = createAsyncThunk("categories/deleteCategories", async(data,{getState})=>{
+export const deleteCategories = createAsyncThunk("categories/deleteCategories", async(data,{getState, dispatch})=>{
     const token = getState().auth.token
-    const response = await fetch("https://beautyshop.yashacode.com/category",{
+    console.log(data)
+    const response = await axios({
         method:"DELETE",
+        url:"https://beautyshop.yashacode.com/category",
         headers:{
             "authorization": `Bearer ${token}`,
         },
-        body:JSON.stringify({cat:data})
+        data:{cat:data}
     })
-    const result = await response.json()
-    return result
+    dispatch(getCategories())
 })
-export const deleteSubCategories = createAsyncThunk("categories/deleteSubCategories", async(data,{getState})=>{
+export const deleteSubCategories = createAsyncThunk("categories/deleteSubCategories", async(data,{getState, dispatch})=>{
     const token = getState().auth.token
-    const response = await fetch("https://beautyshop.yashacode.com/category/sub",{
+    const response = await axios({
         method:"DELETE",
+        url:"https://beautyshop.yashacode.com/category/sub",
         headers:{
             "authorization": `Bearer ${token}`,
         },
-        body:JSON.stringify({sub:data})
+        data:{sub:data}
     })
-    const result = await response.json()
-    return result
+    dispatch(getCategories())
 })
 
 const categoriesSLice = createSlice({

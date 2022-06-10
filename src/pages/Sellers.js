@@ -6,6 +6,7 @@ import {getSellers} from '../features/sellers/sellersSlice'
 function Sellers() {
   const [selected,setselected] = useState('All')
   const [option,setoption] = useState('')
+  const [search,setsearch] = useState('')
   const dispatch = useDispatch()
   const {sellers,sellersLoading} = useSelector(state => state.sellers)
   // useEffect(()=>{},[selected])
@@ -15,6 +16,9 @@ function Sellers() {
   return (
     <div className='flex flex-col lg:justify-center lg:items-center lg:border lg:border-gray-200 lg:rounded-sm w-full h-[80vh] space-y-2'>
       <div className='flex flex-wrap space-x-1 lg:space-x-2 mt-2 lg:mt-0'>
+        <div className='border border-gray-300 flex justify-center items-center rounded-lg px-2'>
+          <input type="text" value={search} onChange={(e)=>setsearch(e.target.value)} className="outline-none" placeholder='Search...' />
+        </div>
         <div className='lg:px-2 lg:py-1 p-1 border border-gray-400 rounded-sm flex space-x-1 lg:space-x-2' >
           <div onClick={()=>setselected('All')} className={`p-1 text-sm lg:text-base rounded-sm hover:bg-gray-400 hover:text-white cursor-pointer ${(selected==='All')?'bg-gray-500 text-white':'bg-none'}`} >All Sellers</div>
           <div onClick={()=>setselected('New')} className={`p-1 text-sm lg:text-base rounded-sm hover:bg-gray-400 hover:text-white cursor-pointer ${(selected==='New')?'bg-gray-500 text-white':'bg-none'}`} >New Sellers</div>
@@ -30,7 +34,7 @@ function Sellers() {
         </div>
         {option&&<button onClick={()=>setoption('')} className='lg:bg-orange-200 lg:border text-sm lg:text-base lg:border-orange-400 text-orange-500 lg:p-1 rounded-sm'>Reset Filter</button>}
       </div>
-      {(selected==='All')?<AllSellers sellers={sellers} option={option} sellersLoading={sellersLoading} />:<NewSellers sellers={sellers} option={option} sellersLoading={sellersLoading}/>}
+      {(selected==='All')?<AllSellers sellers={sellers} option={option} sellersLoading={sellersLoading} query={search} />:<NewSellers sellers={sellers} option={option} sellersLoading={sellersLoading} query={search}/>}
     </div>
   )
 }

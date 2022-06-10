@@ -1,8 +1,16 @@
 import React from 'react'
+import useAuth from '../hooks/useAuth'
+import Login from '../pages/Login'
+export function PrivateRoute({children, ...rest}) {
+  let token = useAuth()
 
-function PrivateRoute({children, ...rest}) {
-  let login = true
-  return login?<>{children}</>:<></>
+  if(token) return <>{children}</>
+  return <Login/>
 }
+export function PrivateRouteTab({children, ...rest}) {
+  let token = useAuth()
 
-export default PrivateRoute
+  if(token) return <>{children}</>
+  return <></>
+}
+// export default PrivateRoute

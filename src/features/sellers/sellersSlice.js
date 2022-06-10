@@ -1,35 +1,54 @@
 import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
-var token ='dasdas'
+import axios from "axios";
+import host from '../host'
 export const getSellers = createAsyncThunk("sellers/getSellers", async () => {
-    const response = await fetch('https://beautyshop.yashacode.com/users/getusers');
+    const response = await fetch(host+'/users/getusers');
     const result = await response.json();
     return result;
 });
 
-export const changeActiveSeller = createAsyncThunk("sellers/changeActiveSeller", async (data) => {
-    const response = await fetch('https://beautyshop.yashacode.com/users/changeactive', {
+export const changeActiveSeller = createAsyncThunk("sellers/changeActiveSeller", async (data, {getState,dispatch}) => {
+    const token = getState().auth.token;
+    const response = await axios({
         method: 'POST',
+        url:host+'/users/changeactive',
         headers: {
             'authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({email: data.email, verification: data.verification})
+        data: {email: data.email, verification: data.verification}
     });
-    const result = await response.json();
-    return result;
+    dispatch(getSellers());
+    return 
 });
-export const acceptSeller = createAsyncThunk("sellers/acceptSeller", async (data) => {
-    const response = await fetch('https://beautyshop.yashacode.com/users/accept_user', {
-        method: 'POST',
+export const upgradeSeller = createAsyncThunk("sellers/upgradeSeller", async (data, {getState,dispatch}) => {
+    const token = getState().auth.token;
+    await axios({
+        method: 'PUT',
+        url:host+'/users/upgrade_user',
         headers: {
             'authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({id: data.id,status:data.status})
+        data: data
     });
-    const result = await response.json();
-    return result;
+    dispatch(getSellers)
+    window.location.replace('/sellers')
+    return
 });
-export const deleteSellers = createAsyncThunk("sellers/deleteSellers", async (id) => {
-    const response = await fetch('https://beautyshop.yashacode.com/users/delete', {
+export const acceptSeller = createAsyncThunk("sellers/acceptSeller", async (data,{getState}) => {
+    const token = getState().auth.token;
+    const response = await axios({
+        method: 'POST',
+        url:host+'/users/accept_user',
+        headers: {
+            'authorization': `Bearer ${token}`
+        },
+        data: {id: data.id,status:data.status}
+    });
+    return response.data;
+});
+export const deleteSellers = createAsyncThunk("sellers/deleteSellers", async (id,{getState}) => {
+    const token = getState().auth.token;
+    const response = await fetch(host+'/users/delete', {
         method: 'DELETE',
         headers: {
             'authorization': `Bearer ${token}`
