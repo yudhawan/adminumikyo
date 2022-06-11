@@ -34,9 +34,9 @@ export const upgradeSeller = createAsyncThunk("sellers/upgradeSeller", async (da
     window.location.replace('/sellers')
     return
 });
-export const acceptSeller = createAsyncThunk("sellers/acceptSeller", async (data,{getState}) => {
+export const acceptSeller = createAsyncThunk("sellers/acceptSeller", async (data,{getState,dispatch}) => {
     const token = getState().auth.token;
-    const response = await axios({
+    await axios({
         method: 'POST',
         url:host+'/users/accept_user',
         headers: {
@@ -44,19 +44,21 @@ export const acceptSeller = createAsyncThunk("sellers/acceptSeller", async (data
         },
         data: {id: data.id,status:data.status}
     });
-    return response.data;
+    dispatch(getSellers())
+    return 
 });
-export const deleteSellers = createAsyncThunk("sellers/deleteSellers", async (id,{getState}) => {
-    const token = getState().auth.token;
-    const response = await fetch(host+'/users/delete', {
+export const deleteSellers = createAsyncThunk("sellers/deleteSellers", async (id,{getState,dispatch}) => {
+    const token = getState().auth.token
+    await axios({
         method: 'DELETE',
+        url:host+'/users/delete',
         headers: {
             'authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({id: id})
+        data: id
     });
-    const result = await response.json();
-    return result;
+    dispatch(getSellers())
+    return 
 });
 
 const sellersSlice = createSlice({
@@ -83,7 +85,6 @@ const sellersSlice = createSlice({
         },
         [changeActiveSeller.fulfilled]: (state, action) => {
             state.sellersLoading = false;
-            state.sellers = action.payload;
         },
         [changeActiveSeller.rejected]: (state, action) => {
             state.sellersLoading = false;
@@ -94,7 +95,6 @@ const sellersSlice = createSlice({
         },
         [acceptSeller.fulfilled]: (state, action) => {
             state.sellersLoading = false;
-            state.sellers = action.payload;
         },
         [acceptSeller.rejected]: (state, action) => {
             state.sellersLoading = false;
@@ -105,7 +105,6 @@ const sellersSlice = createSlice({
         },
         [deleteSellers.fulfilled]: (state, action) => {
             state.sellersLoading = false;
-            state.sellers = action.payload;
         },
         [deleteSellers.rejected]: (state, action) => {
             state.sellersLoading = false;
